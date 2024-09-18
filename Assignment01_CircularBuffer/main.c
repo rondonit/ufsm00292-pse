@@ -1,5 +1,5 @@
 /**
-    Implementação de um buffer circuilar com TDD
+    Implementação de um buffer circular com TDD
     Gabriel Cruz
 **/
 
@@ -28,9 +28,9 @@ void createBuffer (BufferCircular* bc)
 }
 
 
-static char * test_zero (void)
+static char * test_init_buffer (void)
 {
-    assert("ERRO! Para 0 deveria retornar 0", dec2bcd(0) == 0b0);
+    
     return 0;
 }
 
@@ -38,10 +38,7 @@ static char * test_zero (void)
 
 static char * all_tests(void)
 {
-    run_test(test_fifty_nine);
-    run_test(test_one_hundred);
-    run_test(test_1001);
-    run_test(test_zero);
+    run_test(test_init_buffer);
     return 0;
 }
 
