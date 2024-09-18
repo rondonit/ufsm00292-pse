@@ -20,6 +20,12 @@ typedef struct {
 } BufferCircular;
 
 /* Function to create the circular buffer */
+void createBuffer (BufferCircular* bc)
+{
+    bc->start = bc->buffer;
+    bc->end   = bc->buffer;
+    bc->size  = 0;
+}
 
 
 static char * test_zero (void)
