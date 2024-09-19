@@ -27,7 +27,6 @@ void createBuffer (BufferCircular* bc)
     bc->size  = 0;
 }
 
-
 static char * test_init_buffer (void)
 {
     
