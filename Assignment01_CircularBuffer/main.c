@@ -32,15 +32,31 @@ void createBuffer (BufferCircular* bc)
     bc->size  = 0;
 }
 
-void insertBuffer (BufferCircular* bc, int value)
+int insertBuffer (BufferCircular* bc, int value)
 {
     /* This function inserts value in the end position */
     /* Increments the end pointer and the size variable*/
     /* It should check if the buffer is full */
 
+    if (bc->size == BUFFER_MAX_SIZE) {
+        /* If buffer is full */
+        printf("Buffer cheio!\n");
+        return -1;
+    }
+
+    /* Insert the value in the end position*/
     *bc->end = value;
-    bc->end = bc->end + 1;
+
+    /* If it reaches the end of the buffer */
+    /* buffer[10 - 1]*/
+    if (bc->end == bc->buffer + BUFFER_MAX_SIZE-1 ) {
+        bc->end = &bc->buffer[0]; /* Goes to the first position */
+    } else {
+        bc->end = bc->end + 1;
+    }
+
     bc->size++;
+    return 0;
 }
 
 int removeBuffer (BufferCircular* bc)
@@ -51,6 +67,14 @@ int removeBuffer (BufferCircular* bc)
 
     /* Gets the value to be removed */
     int value = *bc->start;
+
+    /* Start points to the next position */
+    /* If it points to the last position, goes to 0th*/
+    if (bc->start == &bc->buffer[BUFFER_MAX_SIZE-1]) {
+        bc->start = &bc->buffer[0];
+    } else {
+        bc->start++;
+    }
 
     return value;
 }
@@ -78,16 +102,38 @@ static char * test_insertBuffer (void)
     createBuffer(&bc);
 
     /* Insert a value in buffer */
-    insertBuffer(&bc, 2);
+    insertBuffer(&bc, 0);
 
     /* Tests if the value was inserted */
-    assert("Erro: O valor não foi inserido na posição 0 do buffer.", bc.buffer[0] == 2);
+    assert("Erro: O valor 0 não foi inserido na posição 0 do buffer.", bc.buffer[0] == 0);
     
     /* Tests if the end pointer was incremented */
     assert("Erro: O valor do ponteiro end não foi incrementado.", bc.end == &bc.buffer[1]);
 
     /* Tests if size variable was incremented */
     assert("Erro: A variável size não foi incrementada.", bc.size == 1);
+
+    /* Testing fill the buffer */
+    for (int i = 0; i <= 10; i++) {
+        insertBuffer(&bc, i);
+    }
+
+    assert("Erro: A variável size deve chegar até 10.", bc.size == 10);
+    assert("Erro: O ponteiro start deveria apontar para o início do buffer", bc.start == &bc.buffer[0]);
+    assert("Erro: O ponteiro end deve apontar novamente para o inicio do buffer. ", bc.end == &bc.buffer[0]);
+    assert("Erro: Deve retornar -1 ao inserir com o buffer cheio. ", insertBuffer(&bc, 200));
+
+    return 0;
+}
+
+static char * test_remove_buffer (void)
+{
+    createBuffer(&bc);
+    insertBuffer(&bc, 3);
+    insertBuffer(&bc, 2);
+    insertBuffer(&bc, 1);
+    
+    return 0;
 }
 
 
@@ -110,4 +156,3 @@ int main ()
     printf("Tests run: %d\n", tests_run);
     return result != 0;
 }
-
