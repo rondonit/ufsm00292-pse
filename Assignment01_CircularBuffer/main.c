@@ -1,13 +1,13 @@
 /**
-    Implementação de um buffer circular com TDD
+    Implementation of a Circular Buffer using TDD concept
     Gabriel Cruz
 **/
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "minunit.h"
+#include "minunit.h" /* test library */
 
-#define BUFFER_MAX_SIZE 10 /* Tamanho máximo do buffer */
+#define BUFFER_MAX_SIZE 10 /* Maximum size of the circular buffer */
 
 int tests_run = 0;
 
@@ -19,7 +19,12 @@ typedef struct {
     int size;
 } BufferCircular;
 
-/* Function to create the circular buffer */
+/* Global variable for the buffer, it will be initialized with createBuffer */
+BufferCircular bc;
+
+/* Function to initialize the circular buffer */
+/* It takes as input the address of the global buffer variable */
+/* Then it initialized the pointers start and end with the 0th element address */
 void createBuffer (BufferCircular* bc)
 {
     bc->start = bc->buffer;
@@ -29,10 +34,20 @@ void createBuffer (BufferCircular* bc)
 
 static char * test_init_buffer (void)
 {
-    
+    /* Initializes the buffer */
+    createBuffer(&bc);
+
+    /* Tests if start points to the first element */
+    assert("ERRO. O ponteiro start não aponta para o início. ", bc.start == bc.buffer);
+
+    /* Tests if end points to the first element */
+    assert("ERRO. O ponteiro end não aponta para o início. ", bc.end == bc.buffer);
+
+    /* Tests if size is 0 */
+    assert("ERRO. A variável size não é 0. ", bc.size == 0);
+
     return 0;
 }
-
 
 
 static char * all_tests(void)
