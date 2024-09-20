@@ -5,7 +5,6 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 #include "minunit.h" /* test library */
 
 #define BUFFER_MAX_SIZE 10 /* Maximum size of the circular buffer */
@@ -23,12 +22,34 @@ typedef struct {
 /* Global variable for the buffer, it will be initialized with createBuffer */
 BufferCircular bc;
 
+void printBuffer(BufferCircular* bc)
+{
+    printf("Buffer: ");
+    for (int i = 0; i < BUFFER_MAX_SIZE; i++) {
+        printf("%d", bc->buffer[i]);
+
+        if (bc->start == &bc->buffer[i] && bc->end == &bc->buffer[i]) {
+            printf("(S)(E) "); // start e end apontam para o mesmo valor
+        } else if (bc->start == &bc->buffer[i]) {
+            printf("(S) ");   // start aponta para este valor
+        } else if (bc->end == &bc->buffer[i]) {
+            printf("(E) ");   // end aponta para este valor
+        } else {
+            printf("  ");
+        }
+    }
+    printf("\n");
+
+    // Imprimir o valor atual de size
+    printf("Size: %d\n", bc->size);
+}
+
 /* Function to initialize the circular buffer */
 /* It takes as input the address of the global buffer variable */
 /* Then it initialized the pointers start and end with the 0th element address */
 void createBuffer (BufferCircular* bc)
 {
-    for (int i = 0; i < BUFFER_MAX_SIZE-1; i++) {
+    for (int i = 0; i < BUFFER_MAX_SIZE; i++) {
         bc->buffer[i] = -1;
     }
     
@@ -65,7 +86,6 @@ int insertBuffer (BufferCircular* bc, int value)
 
     bc->size++;
 
-    printf("DEBUG: start=%p, end=%p, size=%d\n", (void *)bc->start, (void *)bc->end, bc->size);
     return 0;
 }
 
@@ -82,6 +102,7 @@ int removeBuffer (BufferCircular* bc)
 
     /* Gets the value to be removed */
     int value = *bc->start;
+    *bc->start = -1;
 
     /* Start points to the next position */
     /* If it points to the last position, goes to 0th*/
@@ -93,8 +114,6 @@ int removeBuffer (BufferCircular* bc)
 
     bc->size--;
 
-    printf("DEBUG: start=%p, end=%p, size=%d\n", (void *)bc->start, (void *)bc->end, bc->size);
-
     return value;
 }
 
@@ -102,6 +121,8 @@ static char * test_createBuffer (void)
 {
     /* Initializes the buffer */
     createBuffer(&bc);
+
+    printBuffer(&bc);
 
     /* Tests if start points to the first element */
     assert("ERRO. O ponteiro start não aponta para o início. ", bc.start == bc.buffer);
@@ -123,6 +144,8 @@ static char * test_insertBuffer (void)
     /* Insert a value in buffer */
     insertBuffer(&bc, 0);
 
+    printBuffer(&bc);
+
     /* Tests if the value was inserted */
     assert("Erro: O valor 0 não foi inserido na posição 0 do buffer.", bc.buffer[0] == 0);
     
@@ -135,13 +158,15 @@ static char * test_insertBuffer (void)
     /* Testing fill the buffer */
     for (int i = 0; i < 9; i++) {
         insertBuffer(&bc, i);
+        
     }
+    printBuffer(&bc);
 
     assert("Erro: A variável size deve chegar até 10.", bc.size == 10);
     assert("Erro: O ponteiro start deveria apontar para o início do buffer", bc.start == &bc.buffer[0]);
     assert("Erro: O ponteiro end deve apontar para o ultimo valor do buffer. ", bc.end == &bc.buffer[9]);
     assert("Erro: Deve retornar -1 ao inserir com o buffer cheio. ", insertBuffer(&bc, 200));
-
+    printBuffer(&bc);
     return 0;
 }
 
@@ -153,13 +178,48 @@ static char * test_remove_buffer (void)
     insertBuffer(&bc, 3);
     insertBuffer(&bc, 2);
     insertBuffer(&bc, 1);
+    printBuffer(&bc);
     assert("ERRO: Ao remover deveria retornar 3", removeBuffer(&bc) == 3);
     assert("Erro: O ponteiro start deveria apontar para o valor 2", *bc.start == 2);
     assert("Erro: O ponteiro end deveria apontar para o valor 3", *bc.end == 1);
+    printBuffer(&bc);
     assert("ERRO: Ao remover deveria retornar 2", removeBuffer(&bc) == 2);
     assert("Erro: O ponteiro start deveria apontar para o valor 1", *bc.start == 1);
     assert("Erro: O ponteiro end deveria apontar para o valor 1", *bc.end == 1);
+    printBuffer(&bc);
+    return 0;
+}
+
+static char * test_circular_buffer (void)
+{
+    /* This function tests the circular behavior */
     
+    createBuffer(&bc);
+
+    /* Insert 5 values in buffer */
+    for (int i = 0; i <= 4; i++) {
+        insertBuffer(&bc, i);
+    }
+
+    /* Remove 3 values */
+    for (int i = 0; i <= 2; i++) {
+        removeBuffer(&bc);
+    }
+
+    /* Insert 6 values in buffer */
+    for (int i = 1; i <= 6; i++) {
+        insertBuffer(&bc, i*10);
+    }
+
+    /* Remove 7 values */
+    for (int i = 1; i <= 7; i++) {
+        removeBuffer(&bc);
+    }
+
+    assert("Erro: Não houve comportamento circular, start e end deveriam apontar para o mesmo elemento", *bc.start == *bc.end);
+
+    printBuffer(&bc);
+
     return 0;
 }
 
@@ -168,6 +228,7 @@ static char * all_tests(void)
     run_test(test_createBuffer);
     run_test(test_insertBuffer);
     run_test(test_remove_buffer);
+    run_test(test_circular_buffer);
     return 0;
 }
 
@@ -183,3 +244,4 @@ int main ()
     printf("Tests run: %d\n", tests_run);
     return result != 0;
 }
+
