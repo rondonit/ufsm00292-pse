@@ -5,6 +5,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "minunit.h" /* test library */
 
 #define BUFFER_MAX_SIZE 10 /* Maximum size of the circular buffer */
@@ -27,8 +28,12 @@ BufferCircular bc;
 /* Then it initialized the pointers start and end with the 0th element address */
 void createBuffer (BufferCircular* bc)
 {
-    bc->start = bc->buffer;
-    bc->end   = bc->buffer;
+    for (int i = 0; i < BUFFER_MAX_SIZE-1; i++) {
+        bc->buffer[i] = -1;
+    }
+    
+    bc->start = &bc->buffer[0];
+    bc->end   = &bc->buffer[0];
     bc->size  = 0;
 }
 
@@ -44,18 +49,23 @@ int insertBuffer (BufferCircular* bc, int value)
         return -1;
     }
 
+    /* If it reaches the end of the buffer */
+    /* buffer[10 - 1]*/
+    /* If it has only one element, start and end points to the same element */
+    if (bc->size > 0) {
+        if (bc->end == bc->buffer + BUFFER_MAX_SIZE-1 ) {
+            bc->end = &bc->buffer[0]; /* Goes to the first position */
+        } else {
+            bc->end = bc->end + 1;
+        }
+    }
+
     /* Insert the value in the end position*/
     *bc->end = value;
 
-    /* If it reaches the end of the buffer */
-    /* buffer[10 - 1]*/
-    if (bc->end == bc->buffer + BUFFER_MAX_SIZE-1 ) {
-        bc->end = &bc->buffer[0]; /* Goes to the first position */
-    } else {
-        bc->end = bc->end + 1;
-    }
-
     bc->size++;
+
+    printf("DEBUG: start=%p, end=%p, size=%d\n", (void *)bc->start, (void *)bc->end, bc->size);
     return 0;
 }
 
@@ -64,6 +74,11 @@ int removeBuffer (BufferCircular* bc)
     /* This function removes the value pointed by start */
     /* Increments start pointer to the next value */
     /* Decrements the buffer size variable */
+
+    if (bc->size == 0) {
+        printf("Buffer já vazio!\n");
+        return -1;
+    }
 
     /* Gets the value to be removed */
     int value = *bc->start;
@@ -75,6 +90,10 @@ int removeBuffer (BufferCircular* bc)
     } else {
         bc->start++;
     }
+
+    bc->size--;
+
+    printf("DEBUG: start=%p, end=%p, size=%d\n", (void *)bc->start, (void *)bc->end, bc->size);
 
     return value;
 }
@@ -108,19 +127,19 @@ static char * test_insertBuffer (void)
     assert("Erro: O valor 0 não foi inserido na posição 0 do buffer.", bc.buffer[0] == 0);
     
     /* Tests if the end pointer was incremented */
-    assert("Erro: O valor do ponteiro end não foi incrementado.", bc.end == &bc.buffer[1]);
+    assert("Erro: O valor do ponteiro end deveria ser igual a start para size = 1.", bc.end == bc.start);
 
     /* Tests if size variable was incremented */
     assert("Erro: A variável size não foi incrementada.", bc.size == 1);
 
     /* Testing fill the buffer */
-    for (int i = 0; i <= 10; i++) {
+    for (int i = 0; i < 9; i++) {
         insertBuffer(&bc, i);
     }
 
     assert("Erro: A variável size deve chegar até 10.", bc.size == 10);
     assert("Erro: O ponteiro start deveria apontar para o início do buffer", bc.start == &bc.buffer[0]);
-    assert("Erro: O ponteiro end deve apontar novamente para o inicio do buffer. ", bc.end == &bc.buffer[0]);
+    assert("Erro: O ponteiro end deve apontar para o ultimo valor do buffer. ", bc.end == &bc.buffer[9]);
     assert("Erro: Deve retornar -1 ao inserir com o buffer cheio. ", insertBuffer(&bc, 200));
 
     return 0;
@@ -129,18 +148,26 @@ static char * test_insertBuffer (void)
 static char * test_remove_buffer (void)
 {
     createBuffer(&bc);
+
+    assert("Erro: Deve retornar -1 ao tentar remover de um buffer vazio.", removeBuffer(&bc) == -1);
     insertBuffer(&bc, 3);
     insertBuffer(&bc, 2);
     insertBuffer(&bc, 1);
+    assert("ERRO: Ao remover deveria retornar 3", removeBuffer(&bc) == 3);
+    assert("Erro: O ponteiro start deveria apontar para o valor 2", *bc.start == 2);
+    assert("Erro: O ponteiro end deveria apontar para o valor 3", *bc.end == 1);
+    assert("ERRO: Ao remover deveria retornar 2", removeBuffer(&bc) == 2);
+    assert("Erro: O ponteiro start deveria apontar para o valor 1", *bc.start == 1);
+    assert("Erro: O ponteiro end deveria apontar para o valor 1", *bc.end == 1);
     
     return 0;
 }
-
 
 static char * all_tests(void)
 {
     run_test(test_createBuffer);
     run_test(test_insertBuffer);
+    run_test(test_remove_buffer);
     return 0;
 }
 
