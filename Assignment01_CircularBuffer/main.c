@@ -22,27 +22,8 @@ typedef struct {
 /* Global variable for the buffer, it will be initialized with createBuffer */
 BufferCircular bc;
 
-void printBuffer(BufferCircular* bc)
-{
-    printf("Buffer: ");
-    for (int i = 0; i < BUFFER_MAX_SIZE; i++) {
-        printf("%d", bc->buffer[i]);
-
-        if (bc->start == &bc->buffer[i] && bc->end == &bc->buffer[i]) {
-            printf("(S)(E) "); // start e end apontam para o mesmo valor
-        } else if (bc->start == &bc->buffer[i]) {
-            printf("(S) ");   // start aponta para este valor
-        } else if (bc->end == &bc->buffer[i]) {
-            printf("(E) ");   // end aponta para este valor
-        } else {
-            printf("  ");
-        }
-    }
-    printf("\n");
-
-    // Imprimir o valor atual de size
-    printf("Size: %d\n", bc->size);
-}
+/* Print the buffer contents for debuging*/
+void printBuffer(BufferCircular* bc);
 
 /* Function to initialize the circular buffer */
 /* It takes as input the address of the global buffer variable */
@@ -245,3 +226,24 @@ int main ()
     return result != 0;
 }
 
+void printBuffer(BufferCircular* bc)
+{
+    printf("Buffer: ");
+    for (int i = 0; i < BUFFER_MAX_SIZE; i++) {
+        printf("%d", bc->buffer[i]);
+
+        if (bc->start == &bc->buffer[i] && bc->end == &bc->buffer[i]) {
+            printf("(S)(E) "); // start e end apontam para o mesmo valor
+        } else if (bc->start == &bc->buffer[i]) {
+            printf("(S) ");   // start aponta para este valor
+        } else if (bc->end == &bc->buffer[i]) {
+            printf("(E) ");   // end aponta para este valor
+        } else {
+            printf("  ");
+        }
+    }
+    printf("\n");
+
+    // Imprimir o valor atual de size
+    printf("Size: %d\n", bc->size);
+}
