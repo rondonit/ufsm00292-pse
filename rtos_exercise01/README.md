@@ -1,1 +1,1 @@
-Apenas importar o projeto para o MPLAB e rodar o código.
+Apenas importar o projeto para o MPLAB, criar uma nova tarefa e executar.
