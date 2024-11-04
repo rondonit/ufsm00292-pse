@@ -1,0 +1,18 @@
+#
+#Tue Oct 15 16:38:05 BRT 2024
+Debug.com-microchip-mplab-nbide-toolchain-arm-ARMLanguageToolchain.md5=ac2ecfade21354c0103b0a98d2af6ca6
+Debug.languagetoolchain.version=6.3.1
+Debug.com-microchip-mplab-mdbcore-AtmelIceScripting-AtmelIceScriptingBase.md5=08c658d7de75da11bc13fd254c7a7ad8
+conf.ids=Release,Debug
+Release.com-microchip-mplab-nbide-toolchain-arm-ARMLanguageToolchain.md5=ac2ecfade21354c0103b0a98d2af6ca6
+host.id=1f28-c693-2d
+configurations-xml=b0ebe777437f6209d305bef7e71d7524
+Debug.Pack.dfplocation=/home/aluno/.mchp_packs/Microchip/SAMR21_DFP/2.1.155
+Debug.languagetoolchain.dir=/home/aluno/MPLAB/arm-none-eabi/bin
+com-microchip-mplab-nbide-embedded-makeproject-MakeProject.md5=bcd6e5453a11ce86aaffd5305e838602
+Release.languagetoolchain.dir=/home/aluno/MPLAB/arm-none-eabi/bin
+Release.languagetoolchain.version=6.3.1
+Release.Pack.dfplocation=/home/aluno/.mchp_packs/Microchip/SAMR21_DFP/2.1.155
+Release.com-microchip-mplab-mdbcore-AtmelIceScripting-AtmelIceScriptingBase.md5=08c658d7de75da11bc13fd254c7a7ad8
+proj.dir=/home/aluno/ufsm00292-pse/rtos/as_sam_r21/as_r21.X
+host.platform=linux

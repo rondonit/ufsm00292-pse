@@ -1,0 +1,1 @@
+Apenas importar o projeto para o MPLAB e rodar o código.
